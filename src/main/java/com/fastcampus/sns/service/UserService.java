@@ -8,6 +8,7 @@ import com.fastcampus.sns.repository.UserEntityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -17,6 +18,7 @@ public class UserService {
     private final UserEntityRepository userEntityRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Transactional
     public User join(String userName, String password) {
         // 1. 회원가입시에는 userName으로 가입된 user가 있는 지
         userEntityRepository.findByUserName(userName).ifPresent(it -> {
