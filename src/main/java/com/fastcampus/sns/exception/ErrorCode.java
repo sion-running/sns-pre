@@ -7,7 +7,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
-    DUPLICATED_USER_NAME(HttpStatus.CONFLICT, "user name is duplicated");
+    DUPLICATED_USER_NAME(HttpStatus.CONFLICT, "user name is duplicated"),
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "internal server error");
 
     private HttpStatus status;
     private String message;
