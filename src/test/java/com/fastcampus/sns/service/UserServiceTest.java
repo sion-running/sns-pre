@@ -15,7 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -37,7 +36,7 @@ public class UserServiceTest {
         //
         when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.empty());
         when(passwordEncoder.encode(password)).thenReturn("encrypt_password");
-        when(userEntityRepository.save(any())).thenReturn(UserEntityFixture.get(userName, password));
+        when(userEntityRepository.save(any())).thenReturn(UserEntityFixture.get(userName, password, 1));
 
         Assertions.assertDoesNotThrow(() -> userService.join(userName, password));
     }
@@ -46,7 +45,7 @@ public class UserServiceTest {
     void 회원가입시_이미_가입된_userName으로_회원가입을_하는경우_에러반환() {
         String userName = "userName";
         String password = "password";
-        UserEntity fixture = UserEntityFixture.get(userName, password);
+        UserEntity fixture = UserEntityFixture.get(userName, password, 1);
 
         when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.of(fixture));
         when(passwordEncoder.encode(password)).thenReturn("encrypt password");
@@ -61,7 +60,7 @@ public class UserServiceTest {
         String userName = "userName";
         String password = "password";
 
-        UserEntity fixture = UserEntityFixture.get(userName, password);
+        UserEntity fixture = UserEntityFixture.get(userName, password, 1);
         //
         when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.of(fixture));
         when(passwordEncoder.matches(password, fixture.getPassword())).thenReturn(true);
@@ -86,7 +85,7 @@ public class UserServiceTest {
         String password = "password";
         String wrongPassword = "wrongPassword";
 
-        UserEntity fixture = UserEntityFixture.get(userName, password);
+        UserEntity fixture = UserEntityFixture.get(userName, password, 1);
 
         when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.of(fixture));
 

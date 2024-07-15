@@ -6,6 +6,7 @@ import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.Instant;
 
 @Entity
 @Getter
@@ -35,6 +36,16 @@ public class PostEntity {
 
     @Column(name = "deleted_at")
     private Timestamp deletedAt;
+
+    @PrePersist
+    void registeredAt() {
+        this.registeredAt = Timestamp.from(Instant.now());
+    }
+
+    @PreUpdate
+    void updatedAt() {
+        this.updatedAt = Timestamp.from(Instant.now());
+    }
 
     public static PostEntity of(String title, String body, UserEntity userEntity) {
         PostEntity entity = new PostEntity();
