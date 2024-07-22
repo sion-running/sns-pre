@@ -9,5 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CommentEntityRepository extends JpaRepository<CommentEntity, Integer> {
+    // jpa에서 기본제공하는 findAllById는, id pk 인덱스가 걸리지만, 이렇게 수동으로 만들어준 메소드에는 인덱스가 걸리지 않음. 그래서, CommentEntity에 post_id 인덱스 추가했음
     Page<CommentEntity> findAllByPost(PostEntity post, Pageable pageable);
+
 }
