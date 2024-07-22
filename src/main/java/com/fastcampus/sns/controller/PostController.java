@@ -1,6 +1,8 @@
 package com.fastcampus.sns.controller;
 
+import com.fastcampus.sns.controller.request.PostCommentRequest;
 import com.fastcampus.sns.controller.request.PostCreateRequest;
+import com.fastcampus.sns.controller.response.CommentResponse;
 import com.fastcampus.sns.controller.response.PostResponse;
 import com.fastcampus.sns.controller.response.Response;
 import com.fastcampus.sns.model.Post;
@@ -55,5 +57,17 @@ public class PostController {
     public Response<Integer> likeCount(@PathVariable Integer postId) {
         int count = postService.likeCount(postId);
         return Response.success(count);
+    }
+
+    @PostMapping("/{postId}/comments")
+    public Response<Void> comment(@PathVariable Integer postId, @RequestBody PostCommentRequest request, Authentication authentication) {
+        postService.comment(postId, authentication.getName(), request.getComment());
+        return Response.success();
+    }
+
+    @GetMapping("/{postId}/comments")
+    public Response<Page<CommentResponse>> comment(@PathVariable Integer postId, Pageable pageable, Authentication authentication) {
+        postService.getComments(postId, pageable);
+        return Response.success(postService.getComments(postId, pageable).map(CommentResponse::fromComment));
     }
 }
