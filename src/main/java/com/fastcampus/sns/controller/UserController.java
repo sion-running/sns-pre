@@ -3,8 +3,11 @@ package com.fastcampus.sns.controller;
 import com.fastcampus.sns.controller.request.UserJoinRequest;
 import com.fastcampus.sns.controller.request.UserLoginRequest;
 import com.fastcampus.sns.controller.response.*;
+import com.fastcampus.sns.exception.ErrorCode;
+import com.fastcampus.sns.exception.SnsApplicationException;
 import com.fastcampus.sns.model.User;
 import com.fastcampus.sns.service.UserService;
+import com.fastcampus.sns.util.ClassUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +36,15 @@ public class UserController {
 
     @GetMapping("/alarm")
     public Response<Page<AlarmResponse>> alarm(Pageable pageable, Authentication authentication) {
-        return Response.success(userService.alarmList(authentication.getName(), pageable).map(AlarmResponse::fromAlarm));
+//        User user = (User) authentication.getPrincipal();
+        // 위 casting 코드를 좀 더 세이프하게 할 수 있는 유틸 클래스 작성!
+        User user = ClassUtils.getSafeInstance(authentication.getPrincipal(), User.class).orElseThrow(() -> new SnsApplicationException(ErrorCode.INTERNAL_SERVER_ERROR,
+                "Casting to User class failed"));
+        return Response.success(userService.alarmList(user.getId(), pageable).map(AlarmResponse::fromAlarm));
     }
+
+//    @GetMapping("/alarm/test")
+//    public Response<Page<AlarmResponse>> queryTestAlarm(Pageable pageable, Authentication authentication) {
+//        return Response.success(userService.testAlarmList(authentication.getName(), pageable).map(AlarmResponse::fromAlarm));
+//    }
 }
