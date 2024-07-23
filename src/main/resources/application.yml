@@ -17,8 +17,22 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
+        use_sql_comments: true
+        cache:
+          use_second_level_cache: false
+          use_query_cache: false
+    show-sql: true
 jwt:
   secret-key: fast_campus.sns-application-2022.secret_key
   token:
     # 30 days
     expired-time-ms: 2592000000
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
