@@ -16,24 +16,34 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter { // 매 요청마다 필터 거치도록 OncePerRequestFilter를 상속
     private final String key;
     private final UserService userService;
+    private final static List<String> TOKEN_IN_PARAM_URLS = List.of("/api/v1/users/alarm/subscribe"); // 이 요청일 때는 토큰을 query string에서 가져온다
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (header == null || !header.startsWith("Bearer ")) {
-            log.error("Error occurs while getting header. header is null or invalid");
-            filterChain.doFilter(request, response);
-            return;
-        }
+        final String token;
 
         try {
-            final String token = header.split(" ")[1].trim();
+
+            if (TOKEN_IN_PARAM_URLS.contains(request.getRequestURI())) {
+                log.info("request with {} check the query param", request.getRequestURI());
+                token = request.getQueryString().split("=")[1].trim();
+            } else {
+                final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+                if (header == null || !header.startsWith("Bearer ")) {
+                    log.error("Error occurs while getting header. header is null or invalid");
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+                token = header.split(" ")[1].trim();
+            }
+
             // 1. 토큰 유효성 체크(만료기간)
             if (JwtTokenUtils.isExpired(token, key)) {
                 log.error("Key is expired");
