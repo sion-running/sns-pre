@@ -23,14 +23,15 @@ public class AuthenticationConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().regexMatchers("^(?!/api/).*");
+        web.ignoring().regexMatchers("^(?!/api/).*")
+                .antMatchers("/api/*/users/join", "/api/*/users/login", "/h2-console/**");
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception { // http 관련 설정
         http.csrf().disable()
-                .authorizeHttpRequests()
-                .antMatchers("/api/*/users/join", "/api/*/users/login", "/h2-console/**").permitAll()
+                .authorizeRequests()
+//                .antMatchers("/api/*/users/join", "/api/*/users/login", "/h2-console/**").permitAll()
                 .antMatchers("/api/**").authenticated()
                 .and()
                 .headers().frameOptions().sameOrigin()
